@@ -2,6 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const { getTalkers } = require('./APITalkers');
+const { Emptyemail,
+        Validemail,
+        EmptyPassword,
+        MinPassword } = require('./validationFunction');
 
 const app = express();
 app.use(bodyParser.json());
@@ -35,9 +39,22 @@ app.get('/talker/:id', async (req, res) => {
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password);
   const token = crypto.randomBytes(8).toString('hex');
-  res.status(200).json({ token });
+
+  if (Emptyemail(email)) {
+    return res.status(400).json({ message: 'O campo "email" é obrigatório' });
+  }  
+  if (Validemail(email)) {
+    return res.status(400).json({ message: 'O "email" deve ter o formato "email@email.com"' });
+  }
+  if (EmptyPassword(password)) {
+    return res.status(400).json({ message: 'O campo "password" é obrigatório' });
+  } 
+  if (MinPassword(password)) {
+    return res.status(400).json({ message: 'O "password" deve ter pelo menos 6 caracteres' });
+  }
+
+  return res.status(200).json({ token });
 });
 
 app.listen(PORT, () => {
