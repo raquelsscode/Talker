@@ -65,6 +65,19 @@ app.post('/login', (req, res) => {
 });
 
 app.use(validationToken);
+
+app.delete('/talker/:id', async (req, res) => {
+  const talkers = await getTalkers();
+  const { id } = req.params;
+
+  const teste = talkers.filter((index) => index.id !== Number(id));
+  await setTalkers(teste);
+  console.log(talkers);
+
+  res.status(204).end();
+});
+
+app.use(validationToken);
 app.use(validationName);
 app.use(validationAge);
 app.use(validationTalk);
