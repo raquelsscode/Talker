@@ -25,6 +25,20 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+app.get('/talker/search', validationToken, async (req, res) => {
+  const talkers = await getTalkers();
+  const { q } = req.query;
+  const result = talkers.filter((talkerName) => talkerName.name.includes(q));
+
+  if (q === '' || !q) {
+    return res.status(200).json(talkers);
+  }
+  if (!result) {
+    return res.status(200).json([]);
+  }
+  res.status(200).json(result);
+});
+
 app.get('/talker', async (_req, res) => {
   const talkers = await getTalkers();
   const noTalkers = [];
