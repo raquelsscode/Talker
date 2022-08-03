@@ -1,11 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
-const { getTalkers } = require('./APITalkers');
+const { getTalkers, setTalkers } = require('./APITalkers');
 const { Emptyemail,
         Validemail,
         EmptyPassword,
-        MinPassword } = require('./validationFunction');
+        MinPassword,
+        validationToken,
+        validationName,
+        validationAge,
+        validationTalk,
+        validationWatchedAt,
+        validationRate,
+      } = require('./validationFunction');
 
 const app = express();
 app.use(bodyParser.json());
@@ -18,7 +25,7 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
-app.get('/talker', async (req, res) => {
+app.get('/talker', async (_req, res) => {
   const talkers = await getTalkers();
   const noTalkers = [];
   if (talkers.length === 0) {
@@ -55,6 +62,23 @@ app.post('/login', (req, res) => {
   }
 
   return res.status(200).json({ token });
+});
+
+app.use(validationToken);
+app.use(validationName);
+app.use(validationAge);
+app.use(validationTalk);
+app.use(validationWatchedAt);
+app.use(validationRate);
+
+app.post('/talker', async (req, res) => {
+  const talkers = await getTalkers();
+  const id = talkers.length + 1;
+  const newTalker = { id, ...req.body };
+  talkers.push(newTalker);
+  await setTalkers(talkers);
+
+  res.status(201).json(newTalker);
 });
 
 app.listen(PORT, () => {

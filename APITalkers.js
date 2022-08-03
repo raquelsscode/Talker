@@ -12,4 +12,8 @@ const getTalkers = async () => {
   }
 };
 
-module.exports = { getTalkers };
+ async function setTalkers(newTalker) {
+  return fs.writeFile('./talker.json', JSON.stringify(newTalker));
+}
+
+module.exports = { getTalkers, setTalkers };
