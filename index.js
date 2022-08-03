@@ -81,6 +81,17 @@ app.post('/talker', async (req, res) => {
   res.status(201).json(newTalker);
 });
 
+app.put('/talker/:id', async (req, res) => {
+  const talkers = await getTalkers();
+  const { id } = req.params;
+  const intId = Number(id);
+  const talkerIndex = talkers.findIndex((person) => person.id === intId);
+  talkers[talkerIndex] = { id: intId, ...req.body };
+  await setTalkers(talkers);
+
+  res.status(200).json(talkers[talkerIndex]);
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
